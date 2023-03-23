@@ -1,0 +1,93 @@
+import tkinter as tk
+from tkinter import ttk
+
+
+# Skapa fönstret
+root = tk.Tk()
+root.title("Hotellbokning")
+root.geometry('800x600+50+50')
+root.attributes('-alpha',0.99)
+
+rum = {101: {"typ": "enkelsäng", "ledigt": True},
+       102: {"typ": "dubbelsäng", "ledigt": True},
+       103: {"typ": "enkelsäng", "ledigt": True},
+       104: {"typ": "dubbelsäng", "ledigt": True},
+       105: {"typ": "enkelsäng", "ledigt": True},
+       106: {"typ": "enkelsäng", "ledigt": True},
+       107: {"typ": "dubbelsäng", "ledigt": True},
+       108: {"typ": "dubbelsäng", "ledigt": True},
+       109: {"typ": "enkelsäng", "ledigt": True},
+       110: {"typ": "dubbelsäng", "ledigt": True}}
+
+def visa_tillgangliga_rum():
+    rum_listbox.delete(0, tk.END)
+    for r, info in rum.items():
+        if info["ledigt"]:
+            rum_listbox.insert(tk.END, f"Rum {r}: {info['typ']} - Tillgängligt")
+        else:
+            rum_listbox.insert(tk.END, f"Rum {r}: {info['typ']} - Upptaget")
+            
+        
+# Funktion för att checka in en gäst
+def checka_in():
+    rumnummer = int(rumnummer_entry.get())
+    if rumnummer in rum:
+        if rum[rumnummer]["ledigt"]:
+            namn = namn_entry.get()
+            antal_personer = int(antal_personer_entry.get())
+            rum[rumnummer]["ledigt"] = False
+            status_label.config(text=f"Gästen {namn} har checkat in på rum {rumnummer}.")
+            visa_tillgangliga_rum()
+        else:
+            status_label.config(text="Tyvärr, rummet är inte ledigt")
+        
+def checka_ut():
+    rumnummer = int(rumnummer_entry.get())
+    if rumnummer in rum:
+        if not rum[rumnummer]["ledigt"]:
+            rum[rumnummer]["ledigt"] = True
+            status_label.config(text=f"Gästen har checkat ut från rum {rumnummer}.")
+            visa_tillgangliga_rum()
+        else:
+            status_label.config(text="Det finns ingen gäst på detta rum.")
+
+            
+
+# Skapa GUI-element
+rum_listbox = tk.Listbox(root, width=40)
+visa_tillgangliga_rum()
+rumnummer_label = tk.Label(root, text="Rumnummer:")
+rumnummer_entry = tk.Entry(root)
+namn_label = tk.Label(root, text="Namn:")
+namn_entry = tk.Entry(root)
+antal_personer_label = tk.Label(root, text="Antal personer:")
+antal_personer_entry = tk.Entry(root)
+checka_in_button = tk.Button(root, text="Checka in", command=checka_in)
+checka_ut_button = tk.Button(root, text="Checka ut", command=checka_ut)
+status_label = tk.Label(root, text="")
+
+
+# Skapa en Combobox för att välja antal dagar att stanna på hotellet
+antal_dagar_label = ttk.Label(text="Antal dagar:")
+antal_dagar_combobox = ttk.Combobox(values=[1, 2, 3, 4, 5])
+antal_dagar_label.grid(row=3, column=0)
+antal_dagar_combobox.grid(row=3, column=1)
+
+
+# Placera ut GUI-elementen med grid
+rum_listbox.grid(row=0, column=0, rowspan=5)
+rumnummer_label.grid(row=0, column=1)
+rumnummer_entry.grid(row=0, column=2)
+namn_label.grid(row=1, column=1)
+namn_entry.grid(row=1, column=2)
+antal_personer_label.grid(row=2, column=1)
+antal_personer_entry.grid(row=2, column=2)
+antal_dagar_label.grid(row=3, column=1)
+antal_dagar_combobox.grid(row=3, column=2)
+checka_in_button.grid(row=4, column=1, columnspan=2)
+checka_ut_button.grid(row=4, column=3, columnspan=2)
+status_label.grid(row=5, column=1, columnspan=2)
+
+# Starta huvudloopen för GUI:et
+root.mainloop()
+
